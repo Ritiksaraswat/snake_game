@@ -1,0 +1,117 @@
+import turtle as t
+import time as d
+import random as r
+import tkinter.messagebox as tmsg
+
+delay = 0.1
+# screen using turtle
+window = t.Screen()
+window.title("Snake Game")
+window.setup(width = 640, height = 640)
+window.bgcolor('#FFFFB3')
+window.tracer(0)
+
+head = t.Turtle()
+head.speed(0)
+head.shape("square")
+head.color("red")
+head.penup()
+head.goto(0,0)
+head.flag = "right"
+
+food = t.Turtle()
+food.shape("square")
+food.color("brown")
+food.penup()
+food.goto(r.randint(-300, 300), r.randint(-300, 300))
+
+body = []
+
+def move():
+    if head.flag == "up":
+        y = head.ycor()
+        head.sety(y + 15)
+
+    if head.flag == "down":
+        y = head.ycor()
+        head.sety(y - 15)
+
+    if head.flag == "left":
+        x = head.xcor()
+        head.setx(x - 15)
+
+    if head.flag == "right":
+        x = head.xcor()
+        head.setx(x + 15)
+    
+def up():
+    if head.flag != "down":
+        head.flag = "up"
+
+def down():
+    if head.flag != "up":
+        head.flag = "down"
+
+def right():
+    if head.flag != "left":
+        head.flag = "right"
+
+def left():
+    if head.flag != "right":
+        head.flag = "left"
+
+window.listen()
+window.onkeypress(up, "Up")
+window.onkeypress(down, "Down")
+window.onkeypress(left, "Left")
+window.onkeypress(right, "Right")
+
+while(True):
+    window.update()
+    if head.xcor() > 300 or head.xcor() < -300 or head.ycor() > 300 or head.ycor() < -300:
+        head.goto(0 ,0)
+        head.flag = "stop"
+
+        for i in body:
+            i.goto(1000, 2000)
+
+        body = []
+        tmsg.showinfo("Warning","GAME OVER. You Touched The Boundary")
+        
+    if head.distance(food) < 15:
+        x = r.randint(-300, 300)
+        y = r.randint(-300, 300)
+        food.goto(x, y)
+
+        body_part = t.Turtle()
+        body_part.speed(0)
+        body_part.shape("square")
+        body_part.color("green")
+        body_part.penup()
+        body.append(body_part)
+
+    for index in range(len(body) - 1, 0, -1):
+        x = body[index - 1].xcor()
+        y = body[index - 1].ycor()
+        body[index].goto(x, y)
+
+    if len(body) > 0:
+        x = head.xcor()
+        y = head.ycor()
+        body[0].goto(x, y)
+    
+    d.sleep(delay)
+    move()
+
+    for i in body:
+        if i.distance(head) < 15:
+            head.goto(0, 0)
+            head.flag = "stop"
+            
+            for i in body:
+                i.goto(1000, 2000)
+
+            body = []
+            tmsg.showinfo("Warning","GAME OVER. YOU TOUCHED THE BODY")
+
+window.mainloop()
